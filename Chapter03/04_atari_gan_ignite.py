@@ -17,8 +17,12 @@ from gymnasium import spaces
 
 import numpy as np
 
-log = gym.logger
-log.set_level(gym.logger.INFO)
+# Register Atari environments
+import ale_py
+gym.register_envs(ale_py)
+
+# Configure gymnasium logger - set minimum level directly
+gym.logger.min_level = gym.logger.WARN  # Use gym.logger.ERROR for less verbose output
 
 LATENT_VECTOR_SIZE = 100
 DISCR_FILTERS = 64
@@ -200,10 +204,9 @@ if __name__ == "__main__":
     @engine.on(Events.ITERATION_COMPLETED)
     def log_losses(trainer):
         if trainer.state.iteration % REPORT_EVERY_ITER == 0:
-            log.info("%d in %.2fs: gen_loss=%f, dis_loss=%f",
-                     trainer.state.iteration, timer.value(),
-                     trainer.state.metrics['avg_loss_gen'],
-                     trainer.state.metrics['avg_loss_dis'])
+            print(f"Iter {trainer.state.iteration} in {timer.value():.2f}s: "
+                  f"gen_loss={trainer.state.metrics['avg_loss_gen']:.3e}, "
+                  f"dis_loss={trainer.state.metrics['avg_loss_dis']:.3e}")
             timer.reset()
 
     engine.run(data=iterate_batches(envs))

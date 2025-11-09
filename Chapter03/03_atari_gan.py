@@ -17,8 +17,12 @@ from gymnasium import spaces
 
 import numpy as np
 
-log = gym.logger
-log.set_level(gym.logger.INFO)
+# Register Atari environments
+import ale_py
+gym.register_envs(ale_py)
+
+# Configure gymnasium logger - set minimum level directly
+gym.logger.min_level = gym.logger.WARN  # Use gym.logger.ERROR for less verbose output
 
 LATENT_VECTOR_SIZE = 100
 DISCR_FILTERS = 64
@@ -196,8 +200,7 @@ if __name__ == "__main__":
         iter_no += 1
         if iter_no % REPORT_EVERY_ITER == 0:
             dt = time.time() - ts_start
-            log.info("Iter %d in %.2fs: gen_loss=%.3e, dis_loss=%.3e",
-                     iter_no, dt, np.mean(gen_losses), np.mean(dis_losses))
+            print(f"Iter {iter_no} in {dt:.2f}s: gen_loss={np.mean(gen_losses):.3e}, dis_loss={np.mean(dis_losses):.3e}")
             ts_start = time.time()
             writer.add_scalar("gen_loss", np.mean(gen_losses), iter_no)
             writer.add_scalar("dis_loss", np.mean(dis_losses), iter_no)
