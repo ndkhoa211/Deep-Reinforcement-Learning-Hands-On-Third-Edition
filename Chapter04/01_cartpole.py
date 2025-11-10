@@ -86,7 +86,9 @@ def filter_batch(batch: tt.List[Episode], percentile: float) -> \
 
 
 if __name__ == "__main__":
-    env = gym.make("CartPole-v1")
+    # env = gym.make("CartPole-v1")
+    env = gym.make("CartPole-v1", render_mode="rgb_array")
+    env = gym.wrappers.RecordVideo(env, video_folder="video")
     assert env.observation_space.shape is not None
     obs_size = env.observation_space.shape[0]
     assert isinstance(env.action_space, gym.spaces.Discrete)
